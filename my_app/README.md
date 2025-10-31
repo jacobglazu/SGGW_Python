@@ -1,0 +1,1 @@
+main.py is in localization: my_app\src\my_app
