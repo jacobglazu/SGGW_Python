@@ -22,7 +22,6 @@ class FileWriter:
     
     def __enter__(self):
         print(f"Otwieram zasób")
-#        self.file = open(path, "w", encoding= "utf-8")
         return self.file
     
     def __exit__(self,ecx_type, exc_val, exc_tb):

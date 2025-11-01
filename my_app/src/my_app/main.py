@@ -26,14 +26,14 @@ def log_execution_time(func):
     @functools.wraps(func)
 
     def wrapper(*args, **kwrgs):
-        """if args and hasattr(args[0], '__class__'):
-            func_display_name = f"{args[0].__class__.__name__}.{func.__name__}"
-        else:
-            func_display_name = func.__name__"""
         func_display_name = func.__name__
+        logging.info(f"Rozpoczęto wykonanie funkcji: {func_display_name}")
+        
         start = time.perf_counter()
         result = func(*args, **kwrgs)
         elapsed =time.perf_counter() - start
+        
+        logging.info(f"Zakonczono wykonanie funkcji: {func_display_name}")
         logging.info(f"Funkcja {func_display_name} wykonała się w: {elapsed:,.4f} sekund")
         return result
     return wrapper
