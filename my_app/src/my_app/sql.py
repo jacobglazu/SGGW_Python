@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from datetime import datetime
-from sqlalchemy import String, Integer, DateTime, Boolean, Float
+from sqlalchemy import String, Integer, DateTime, Boolean, Float, select
 from sqlalchemy.orm import Mapped, mapped_column, declarative_base, Session
 
 engine = create_engine("sqlite:///test.db", echo=True)
@@ -48,3 +48,16 @@ with Session(engine) as session:
     #session.flush()
     session.commit()
     session.close()
+
+with Session(engine) as session:
+    #titles = session.scalars(select(Experiment.title)).all()
+    
+    #for i in range(min(2, len(titles))):
+     # print(Experiment.title[i])
+    stmt = select('*').select_from(Experiment)
+    result = session.execute(stmt).fetchall()
+    print(result)
+
+    stmt_2 = select('*').select_from(DataPoint)
+    res = session.execute(stmt_2).fetchall()
+    print(res)
