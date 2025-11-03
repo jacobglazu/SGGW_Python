@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from datetime import datetime
-from sqlalchemy import String, Integer, DateTime, Boolean, Float, select
+from sqlalchemy import String, Integer, DateTime, Boolean, Float, select, delete
 from sqlalchemy.orm import Mapped, mapped_column, declarative_base, Session
 
 engine = create_engine("sqlite:///test.db", echo=True)
@@ -68,3 +68,13 @@ with Session(engine) as session:
     exp = session.get(Experiment, 2)
     exp.finished = True
     session.commit()
+    session.close()
+
+with Session(engine) as session:
+    session.execute(delete(Experiment))
+    session.commit()
+    session.close()
+with Session(engine) as session:
+    session.execute(delete(DataPoint))
+    session.commit()
+    session.close()
