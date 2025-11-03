@@ -28,8 +28,23 @@ class DataPoint(Base):
 Base.metadata.create_all(engine)
 
 with Session(engine) as session:
-    expr = Experiment(id=1,title = "Wood", created_at = datetime(2022,11,11), type = 3, finished= False)
-    session.add(expr)
-    session.flush()
-    print(expr.id)
+    #expr = Experiment(id=1,title = "Wood", created_at = datetime(2022,11,11), type = 3, finished= False)
+    session.add_all([
+                Experiment(title = "Wood", created_at = datetime(2022,11,11), type = 3, finished= False,),
+                Experiment(title = "Fire", created_at = datetime(2025,8,11), type = 4, finished= False,),
+                DataPoint(real_value = 55, target_value = 60,),
+                DataPoint(real_value = 58, target_value = 60,),
+                DataPoint(real_value = 92, target_value = 90,),
+                DataPoint(real_value = 54, target_value = 50,),
+                DataPoint(real_value = 45, target_value = 50,),
+                DataPoint(real_value = 75, target_value = 80,),
+                DataPoint(real_value = 82, target_value = 80,),
+                DataPoint(real_value = 93, target_value = 100,),
+                DataPoint(real_value = 13, target_value = 15,),
+                DataPoint(real_value = 15, target_value = 20,),
+                ])
+                
+            
+    #session.flush()
     session.commit()
+    session.close()
