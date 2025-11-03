@@ -1,7 +1,8 @@
+import os
 from sqlalchemy import create_engine
 from datetime import datetime
 from sqlalchemy import String, Integer, DateTime, Boolean, Float, select, delete
-from sqlalchemy.orm import Mapped, mapped_column, declarative_base, Session
+from sqlalchemy.orm import Mapped, mapped_column, declarative_base, Session, relationship
 
 engine = create_engine("sqlite:///test.db", echo=True)
 print(engine.connect())
@@ -78,3 +79,12 @@ with Session(engine) as session:
     session.execute(delete(DataPoint))
     session.commit()
     session.close()
+
+    # Usunięcie pliku bazy
+    engine.dispose()
+    if os.path.isfile('test.db'):
+        os.remove('test.db')
+        print(f"Plik test.db został usunięty")
+    else:
+        print(f"Nie znaleziono pliku")
+    
