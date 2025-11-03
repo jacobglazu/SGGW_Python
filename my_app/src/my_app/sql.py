@@ -50,10 +50,7 @@ with Session(engine) as session:
     session.close()
 
 with Session(engine) as session:
-    #titles = session.scalars(select(Experiment.title)).all()
     
-    #for i in range(min(2, len(titles))):
-     # print(Experiment.title[i])
     stmt = select('*').select_from(Experiment)
     result = session.execute(stmt).fetchall()
     print(result)
@@ -61,3 +58,13 @@ with Session(engine) as session:
     stmt_2 = select('*').select_from(DataPoint)
     res = session.execute(stmt_2).fetchall()
     print(res)
+
+    exp = session.get(Experiment, 1)
+    
+    if exp is not None:
+        exp.finished = True
+    else:
+        print(f"Nie można znaleźć eksperymetnu on id = 1")
+    exp = session.get(Experiment, 2)
+    exp.finished = True
+    session.commit()
