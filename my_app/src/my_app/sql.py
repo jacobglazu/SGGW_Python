@@ -1,7 +1,7 @@
 import os
 from sqlalchemy import create_engine
 from datetime import datetime
-from sqlalchemy import String, Integer, DateTime, Boolean, Float, select, delete
+from sqlalchemy import String, Integer, DateTime, Boolean, Float, select, delete, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, declarative_base, Session, relationship
 
 engine = create_engine("sqlite:///test.db", echo=True)
@@ -87,4 +87,32 @@ with Session(engine) as session:
         print(f"Plik test.db został usunięty")
     else:
         print(f"Nie znaleziono pliku")
-    
+
+    # relacje 1 do wielu
+
+class Experiment(Base):
+    __tablename__ = 'experiment_2'
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    title: Mapped[str] = mapped_column(String(50), nullable=False)
+    created_at: Mapped[datetime.date] = mapped_column(DateTime(),default=datetime.utcnow)
+    type: Mapped[int] = mapped_column(String(30))
+    finished: Mapped[Boolean] = mapped_column(Boolean, default=False)
+
+    datapoint = relationship("DataPoint", back_populates="experiment_2", cascade= "all, delete-orphan" )
+
+class DataPoint(Base):
+    __tablename__ = 'datapoints'
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    experiment_id: Mapped[int] = mapped_column(Integer, ForeignKey(Experiment.id), nullable= False)
+    real_value: Mapped[float] = mapped_column(Float(50))
+    target_value: Mapped[float] = mapped_column(Float(50))
+
+    experiment = relationship("Experiment", back_populates="datapoints")
+
+    def __rep__(self):
+        return(f"<Data(id={self.id}), experimetn_id= {self.experiment_id}, "
+               f"real_value= {self.real_value}, target_value= {self.target_value}")
+
+
+Base.metadata.create_all(engine)
+
