@@ -109,7 +109,7 @@ class DataPoints(Base):
     real_value: Mapped[float] = mapped_column(Float(50))
     target_value: Mapped[float] = mapped_column(Float(50))  
 
-    experiment : Mapped[Experiment2] = relationship(back_populates="datapoints")
+    experiment2 : Mapped[Experiment2] = relationship(back_populates="datapoints")
 
     def __repr__(self) -> str:
         return(
@@ -121,19 +121,35 @@ Base.metadata.create_all(engine)
 
 with Session(engine) as session:
     exp = Experiment2(title="Wood", type=3, finished=False)
-    dp1 = DataPoints(real_value=1.23, target_value=2.34, experiment=exp)
-    dp2 = DataPoints(real_value= 2.1, target_value= 3.3, experiment =exp)
-    dp3 = DataPoints(real_value= 2.2, target_value= 3.5, Experiment =exp)
-    dp4 = DataPoints(real_value= 2.5, target_value= 3.6, Experiment =exp)
-    dp5 = DataPoints(real_value= 2.4, target_value= 3.7, Experiment =exp)
-    dp6 = DataPoints(real_value= 2.6, target_value= 3.8, Experiment =exp)
-    dp7 = DataPoints(real_value= 2.3, target_value= 3.23, Experiment =exp)
-    dp8 = DataPoints(real_value= 2.8, target_value= 3.44, Experiment =exp)
-    dp9 = DataPoints(real_value= 2.33, target_value= 3.55, Experiment =exp)
-    dp10 = DataPoints(real_value= 2.44, target_value= 3.15, Experiment =exp)
+    dp1 = DataPoints(real_value=1.23, target_value=2.34, experiment2= exp)
+    dp2 = DataPoints(real_value= 2.1, target_value= 3.3, experiment2 = exp)
+    dp3 = DataPoints(real_value= 2.2, target_value= 3.5, experiment2 = exp)
+    dp4 = DataPoints(real_value= 2.5, target_value= 3.6, experiment2 = exp)
+    dp5 = DataPoints(real_value= 2.4, target_value= 3.7, experiment2 = exp)
+    dp6 = DataPoints(real_value= 2.6, target_value= 3.8, experiment2 = exp)
+    dp7 = DataPoints(real_value= 2.3, target_value= 3.23, experiment2 = exp)
+    dp8 = DataPoints(real_value= 2.8, target_value= 3.44, experiment2 = exp)
+    dp9 = DataPoints(real_value= 2.33, target_value= 3.55, experiment2 = exp)
+    dp10 = DataPoints(real_value= 2.44, target_value= 3.15, experiment2 = exp)
 
 
     session.add(exp)   # dp1 zostanie dodany automatycznie dzięki cascade
     session.commit()
+    session.close()
 
-    
+with Session(engine) as session:   
+    exp2 = Experiment2(title="Fire", type=2, finished=False)
+    dp1 = DataPoints(real_value=1.23, target_value=2.34, experiment2= exp2)
+    dp2 = DataPoints(real_value= 2.1, target_value= 3.3, experiment2 = exp2)
+    dp3 = DataPoints(real_value= 2.2, target_value= 3.5, experiment2 = exp2)
+    dp4 = DataPoints(real_value= 2.5, target_value= 3.6, experiment2 = exp2)
+    dp5 = DataPoints(real_value= 2.4, target_value= 3.7, experiment2 = exp2)
+    dp6 = DataPoints(real_value= 2.6, target_value= 3.8, experiment2 = exp2)
+    dp7 = DataPoints(real_value= 2.3, target_value= 3.23, experiment2 = exp2)
+    dp8 = DataPoints(real_value= 2.8, target_value= 3.44, experiment2 = exp2)
+    dp9 = DataPoints(real_value= 2.33, target_value= 3.55, experiment2 = exp2)
+    dp10 = DataPoints(real_value= 2.44, target_value= 3.15, experiment2 = exp2) 
+
+    session.add(exp2)
+    session.commit()
+    session.close()   
