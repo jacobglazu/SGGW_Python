@@ -92,26 +92,26 @@ with Session(engine) as session:
 engine = create_engine("sqlite:///test.db", echo=True)
 print(engine.connect())
 
-class Experiment_2(Base):
-    __tablename__ = 'experiment_2'
+class Experiment2(Base):
+    __tablename__ = 'experiment2'
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     title: Mapped[str] = mapped_column(String(50), nullable=False)
     created_at: Mapped[datetime.date] = mapped_column(DateTime(),default=datetime.utcnow)
     type: Mapped[int] = mapped_column(String(30))
     finished: Mapped[Boolean] = mapped_column(Boolean, default=False)
 
-   # datapoint = relationship("datapoints", back_populates="experiment_2")# cascade= "all, delete-orphan" )
-    dataponits: Mapped[list["DataPoints"]] = relationship("Datapoints", back_populates="experiment_2", cascade= "all, delete-orphan",)
+  
+    datapoints: Mapped[list["DataPoints"]] = relationship(back_populates="experiment", cascade= "all, delete-orphan",)
 class DataPoints(Base):
     __tablename__ = 'datapoints'
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    experiment_id: Mapped[int] = mapped_column(Integer, ForeignKey(Experiment_2.id), nullable= False)
+    experiment_id: Mapped[int] = mapped_column(Integer, ForeignKey(Experiment2.id), nullable= False)
     real_value: Mapped[float] = mapped_column(Float(50))
     target_value: Mapped[float] = mapped_column(Float(50))
 
-    experiment : Mapped[Experiment_2] = relationship("Experiment_2", back_populates="datapoints")
+    experiment : Mapped[Experiment2] = relationship(back_populates="datapoints")
 
-    def __rep__(self) -> str:
+    def __repr__(self) -> str:
         return(
             f"<Data(id={self.id})," f"experimetn_id= {self.experiment_id}, "
             f"real_value= {self.real_value}," f"target_value= {self.target_value},")
@@ -120,10 +120,10 @@ class DataPoints(Base):
 Base.metadata.create_all(engine)
 
 with Session(engine) as session:
-    exp = Experiment_2(title="Wood", type=3, finished=False)
+    exp = Experiment2(title="Wood", type=3, finished=False)
     dp1 = DataPoints(real_value=1.23, target_value=2.34, experiment=exp)
 
-session.add(exp)   # dp1 zostanie dodany automatycznie dzięki cascade
-session.commit()
+    session.add(exp)   # dp1 zostanie dodany automatycznie dzięki cascade
+    session.commit()
 
     
