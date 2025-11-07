@@ -1,7 +1,8 @@
+from typing import Optional, List
 import os
 from sqlalchemy import create_engine
 from datetime import datetime
-from sqlalchemy import String, Integer, DateTime, Boolean, Float, select, delete, ForeignKey
+from sqlalchemy import String, Integer, DateTime, Boolean, Float, select, delete, ForeignKey, Column, Table
 from sqlalchemy.orm import Mapped, mapped_column, declarative_base, Session, relationship
 
 engine = create_engine("sqlite:///test.db", echo=True)
@@ -101,7 +102,7 @@ class Experiment2(Base):
     finished: Mapped[Boolean] = mapped_column(Boolean, default=False)
 
   
-    datapoints: Mapped[list["DataPoints"]] = relationship(back_populates="experiment2", cascade= "all, delete-orphan",)
+    datapoints: Mapped[List["DataPoints"]] = relationship(back_populates="experiment2", cascade= "all, delete-orphan",)
 class DataPoints(Base):
     __tablename__ = 'datapoints'
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -152,4 +153,77 @@ with Session(engine) as session:
 
     session.add(exp2)
     session.commit()
-    session.close()   
+    session.close()
+
+class Association(Base):
+    __tablename__ = "association_table"
+
+    subject_id: Mapped[int] = mapped_column(Integer,ForeignKey("subject.id"), primary_key=True)
+    experiment_id: Mapped[int] = mapped_column(Integer,
+        ForeignKey("experiment3.id"), primary_key=True
+    )
+    extra_data: Mapped[Optional[str]] = mapped_column(String(100), nullable= False)
+# association between Assocation -> Child
+    exp: Mapped["Experiment3"] = relationship(back_populates="parent_associations")
+
+    # association between Assocation -> Parent
+    sub: Mapped["Subject"] = relationship(back_populates="child_associations")
+
+    def __repr__(self) -> str:
+        return (
+            f"<Association subject_id={self.subject_id!r} "
+            f"experiment_id={self.experiment_id!r} extra_data={self.extra_data!r}>"
+        )
+
+
+# child
+class Experiment3(Base):
+    __tablename__ = "experiment3"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    title: Mapped[str] = mapped_column(String(50), nullable=False)
+    created_at: Mapped[datetime.date] = mapped_column(DateTime(),default=datetime.utcnow)
+    type: Mapped[int] = mapped_column(String(30))
+    finished: Mapped[Boolean] = mapped_column(Boolean, default=False)
+    
+    # association between Child -> Association -> Parent
+    parent_associations: Mapped[List["Association"]] = relationship(
+        back_populates="exp"
+    )
+    subjects : Mapped[List["Subject"]] = relationship("Subject",secondary="association_table",viewonly=True, back_populates="experiments",)
+
+    def __repr__(self) -> str:
+        return f"<Experiment3 id={self.id!r} title={self.title!r}>"
+
+# Parent
+class Subject(Base):
+    __tablename__ = "subject"
+    id: Mapped[int]= mapped_column(Integer, primary_key= True)
+    gdpr_advanced: Mapped[Boolean]= mapped_column(Boolean, default= False)
+    
+
+    # association between Parent -> Association -> Child
+    child_associations: Mapped[List["Association"]] = relationship(
+        back_populates="sub"
+    )
+    experiments : Mapped[List["Experiment3"]] = relationship("Experiment3",secondary="association_table",viewonly= True, back_populates="subjects",)
+
+    def __repr__(self) -> str:
+        return (
+            f"<Subject id={self.id!r} gdpr_advanced={self.gdpr_advanced!r}>"
+        )
+
+
+engine = create_engine("sqlite:///test.db", echo=True)
+print(engine.connect())
+
+Base.metadata.create_all(engine)
+with Session(engine) as session:
+    s1 = Subject(gdpr_advanced = True)
+    e1 = Experiment3(title = "Buy", created_at =datetime(2022,11,11), type =5)
+    assoc = Association(extra_data= "first link")
+    assoc.sub = s1
+    assoc.exp = e1
+    
+    session.add_all([s1, e1, assoc])
+    session.commit()
+    session.close()
