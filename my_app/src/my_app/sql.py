@@ -81,13 +81,13 @@ with Session(engine) as session:
     session.commit()
     session.close()
 
-    # Usunięcie pliku bazy
-    engine.dispose()
+   # Usunięcie pliku bazy
+"""    engine.dispose()
     if os.path.isfile('test.db'):
         os.remove('test.db')
         print(f"Plik test.db został usunięty")
     else:
-        print(f"Nie znaleziono pliku")
+        print(f"Nie znaleziono pliku")"""
 
     # relacje 1 do wielu
 engine = create_engine("sqlite:///test.db", echo=True)
@@ -155,6 +155,7 @@ with Session(engine) as session:
     session.commit()
     session.close()
 
+   # wiele do wielu
 class Association(Base):
     __tablename__ = "association_table"
 
